@@ -21,7 +21,8 @@ dependencies:
     - tensorboard
     - tensorflow_datasets
     - tensorflow-model-optimization
-    - jupyterlab_tensorboard
+    - tensorboard_plugin_profile
+    # - jupyterlab_tensorboard
     - jupyterlab-code-formatter
     - mlflow
 
