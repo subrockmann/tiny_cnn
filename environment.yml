@@ -7,6 +7,7 @@ channels:
 dependencies:
   - python=3.10
   - jupyterlab
+  - jupyterlab-git
   - numpy
   - pandas
   - scikit-learn
@@ -17,7 +18,11 @@ dependencies:
   - pip
   - pip:
     - tensorflow
+    - tensorboard
+    - tensorflow_datasets
     - tensorflow-model-optimization
+    - jupyterlab_tensorboard
+    - jupyterlab-code-formatter
     - mlflow
 
 
