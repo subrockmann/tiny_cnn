@@ -6,8 +6,10 @@ channels:
 
 dependencies:
   - python=3.10
+  - jupyter
   - jupyterlab
   - jupyterlab-git
+  - ipywidgets
   - numpy
   - pandas
   - scikit-learn
@@ -25,5 +27,8 @@ dependencies:
     # - jupyterlab_tensorboard
     - jupyterlab-code-formatter
     - mlflow
+    - pydot
+    - wandb
+    - hydra-core
 
 
