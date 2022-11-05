@@ -134,6 +134,9 @@ mlartifacts/
 outputs/
 mlruns.db/
 
+# Datasets
+datasets/
+
 # Tensorboard
 logs/
 

@@ -17,6 +17,8 @@ dependencies:
   - pillow
   - cudatoolkit=11.2
   - cudnn=8.1.0
+  - contextlib2
+  - psutil
   - pip
   - pip:
     - tensorflow
@@ -26,9 +28,14 @@ dependencies:
     - tensorboard_plugin_profile
     # - jupyterlab_tensorboard
     - jupyterlab-code-formatter
-    - mlflow
+    #- mlflow
     - pydot
     - wandb
-    - hydra-core
+    #- hydra-core
+    - deeplake #>=3.0.13
+    - silabs-mltk
+    - split-folders
+    - unrar
+    #- line-profiler
 
 
