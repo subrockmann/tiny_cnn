@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, csv
 #import pathlib
 from pathlib import Path
  
@@ -104,3 +104,26 @@ def create_model_name(base_model_name, alpha, input_shape, classes, variation_co
     """
     model_name = f"{base_model_name}_{alpha}_{input_shape[0]}_c{input_shape[2]}_o{classes}_{variation_code}"
     return model_name
+
+def append_dict_to_csv(csv_path, data_dict):
+    """Appends dictionary to a csv file. 
+    If the csv file does not exist, the file will be created and the headers are written to the file. 
+
+    Args:
+        csv_path (string: Filepath to the location of the csv file.
+        data_dict (dict): Dictionary that is appended to the file
+    """
+    if not csv_path.exists():
+        print(f"{csv_path} does not exist.")
+        
+        with open(csv_path, "a",  newline='') as file:
+            writer = csv.DictWriter(file, fieldnames =data_dict.keys())
+            writer.writeheader()
+            writer.writerow(data_dict) 
+            print(f"Created file: {csv_path} inlcuding headers.")
+    else:
+        with open(csv_path, "a",  newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=data_dict.keys())
+            writer.writerow(data_dict) 
+
+    return
