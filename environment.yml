@@ -3,9 +3,11 @@ name: tiny_cnn
 channels:
   - conda-forge
   - anaconda
+  - plotly
 
 dependencies:
-  - python=3.10
+  - python=3.10.5
+  - ipykernel
   - jupyter
   - jupyterlab
   - jupyterlab-git
@@ -19,9 +21,12 @@ dependencies:
   - cudnn=8.1.0
   - contextlib2
   - psutil
+  - plotly #=5.11.0
+  - black
+  - papermill
   - pip
   - pip:
-    - tensorflow
+    - tensorflow==2.10
     - tensorboard
     - tensorflow_datasets
     - tensorflow-model-optimization
@@ -32,10 +37,15 @@ dependencies:
     - pydot
     - wandb
     #- hydra-core
-    - deeplake #>=3.0.13
+    #- deeplake #>=3.0.13
+    - netron
     - silabs-mltk
     - split-folders
     - unrar
+    - pyserial >=3.4
+    - esptool >=3.3
+    #- everywhereml
+
     #- line-profiler
 
 

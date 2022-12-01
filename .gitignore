@@ -142,3 +142,6 @@ logs/
 
 # Weights & Biases
 wandb/
+
+# trash
+trash/
