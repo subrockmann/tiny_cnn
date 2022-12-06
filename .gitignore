@@ -143,5 +143,7 @@ logs/
 # Weights & Biases
 wandb/
 
-# trash
+# Temporary paths
+artifact_notebooks/
+models/
 trash/
