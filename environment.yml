@@ -24,6 +24,7 @@ dependencies:
   - plotly #=5.11.0
   - black
   - papermill
+  - prettytable
   - pip
   - pip:
     - tensorflow==2.10
