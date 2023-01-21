@@ -40,9 +40,12 @@ int inference_count = 0;
 
 static tflite::MicroErrorReporter micro_error_reporter;
 tflite::ErrorReporter *error_reporter = &micro_error_reporter;
-// error_reporter = &micro_error_reporter;
+
+tflite::MicroResourceVariables* resource_variables = nullptr;
 
 // tflite::MicroProfiler profiler(&micro_error_reporter);
+// constexpr tflite::MicroProfiler profiler;
+tflite::MicroProfiler profiler;
 
 constexpr int kTensorArenaSize = 2000;
 uint8_t tensor_arena[kTensorArenaSize];
@@ -78,8 +81,13 @@ if (model->version() != TFLITE_SCHEMA_VERSION)
 
   // Build an interpreter to run the model with.
   static tflite::MicroInterpreter static_interpreter(
-      model, resolver, tensor_arena, kTensorArenaSize); //, error_reporter); // &micro_error_reporter); //, &profiler); //, error_reporter);
+      model, resolver, tensor_arena, kTensorArenaSize, resource_variables, &profiler);
   interpreter = &static_interpreter;
+
+  //   MicroInterpreter(const Model* model, const MicroOpResolver& op_resolver,
+                   //uint8_t* tensor_arena, size_t tensor_arena_size,
+                   //MicroResourceVariables* resource_variables = nullptr,
+                   //MicroProfilerInterface* profiler = nullptr);
 
   // Allocate memory from the tensor_arena for the model's tensors.
   TfLiteStatus allocate_status = interpreter->AllocateTensors();
@@ -118,6 +126,8 @@ void loop() {
                          static_cast<double>(x));
     return;
   }
+
+  profiler.Log();
 
   // Obtain the quantized output from model's output tensor
   int8_t y_quantized = output->data.int8[0];
