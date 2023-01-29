@@ -10,11 +10,12 @@ from functools import partial
 
 import tensorflow as tf
 import tensorflow_datasets as tfds
-from tensorflow import keras
-from tensorflow.keras.layers import Input, Dense, Flatten, Conv2D,DepthwiseConv2D, MaxPooling2D, AvgPool2D, GlobalAveragePooling2D, BatchNormalization, Concatenate
-from tensorflow.keras.layers import ReLU
-from tensorflow.keras.models import Model
-from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, LearningRateScheduler
+#from tensorflow import keras
+keras = tf.keras
+from keras.layers import Input, Dense, Flatten, Conv2D,DepthwiseConv2D, MaxPooling2D, AvgPool2D, GlobalAveragePooling2D, BatchNormalization, Concatenate
+from keras.layers import ReLU
+from keras.models import Model
+from keras.callbacks import ModelCheckpoint, EarlyStopping, LearningRateScheduler
  
 # Import the necessary MLTK APIs
 from mltk.core import view_model, summarize_model, profile_model
