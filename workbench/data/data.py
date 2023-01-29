@@ -76,3 +76,102 @@ def get_vvw_dataset(input_shape, batch_size):
     labels = ["no_person", "person"]
 
     return train_ds, val_ds, test_ds, labels
+
+
+def get_lemon_quality_dataset(dataset_path, img_width, img_height, batch_size, channels, normalize=True):
+    """ Fetches the lemon quality dataset and prints dataset info. It normalizes the image data to range [0,1] by default.
+
+    Args: 
+        dataset_path (Path): the file location of the dataset. Subfolders "train", "test", and "val" are expected.
+        normalize (boolean): Normalizes the image data to range [0, 1]. Default: True
+
+    Returns:
+        (train_ds, val_ds, test_ds, class_names) (tuple(tf.datasets)): Tensorflow datasets for train, validation and test.
+    
+    """
+
+    shuffle_seed = 1
+    if dataset_path.exists():
+        try:
+            train_dir = dataset_path.joinpath("train")
+            val_dir = dataset_path.joinpath( "val")
+            test_dir = dataset_path.joinpath( "test")
+        except:
+            print(f"Please check the folder structure of {dataset_path}.")
+            raise
+
+    channels = int(channels) #.strip("c"))
+    if channels==1:
+        color_mode = "grayscale"
+    else:
+        color_mode = "rgb" 
+    print(f"Color mode: {color_mode}")
+
+    # create the labels list to avoid inclusion of .ipynb checkpoints
+    #labels = ["bad_quality", "empty_background", "good_quality"]
+
+    print("Preparing training dataset...")        
+    train_ds = tf.keras.utils.image_dataset_from_directory(
+        train_dir,
+        subset=None,
+        seed=shuffle_seed,
+        image_size=((img_height, img_width)),
+        #labels=labels,
+        batch_size=batch_size,
+        #color_mode=color_mode,
+        shuffle=True
+        )
+    
+
+    class_names = train_ds.class_names
+
+
+    print("Preparing validation dataset...")    
+    val_ds = tf.keras.utils.image_dataset_from_directory(
+        val_dir,
+        subset=None,
+        seed=shuffle_seed,
+        image_size=(img_height, img_width),
+        batch_size=batch_size,
+        #color_mode=color_mode,
+        shuffle=True
+        )
+    
+
+    print("Preparing test dataset...")    
+    test_ds = tf.keras.utils.image_dataset_from_directory(
+        test_dir,
+        subset=None,
+        seed=shuffle_seed,
+        image_size=(img_height, img_width),
+        batch_size=1,
+        #color_mode=color_mode,
+        shuffle=False
+        )
+    
+    # Create a data augmentation stage with horizontal flipping, rotations, zooms
+    data_augmentation = keras.Sequential(
+        [
+            tf.keras.layers.RandomFlip("horizontal"),
+            tf.keras.layers.RandomRotation(0.1),
+            tf.keras.layers.RandomZoom(0.1),
+        ]
+        )
+
+    #train_ds= train_ds.map(lambda x, y: (data_augmentation(x), y), num_parallel_calls=tf.data.AUTOTUNE )
+
+    
+    # Normalize the data to the range [0, 1]
+    if normalize:
+        normalization_layer = tf.keras.layers.Rescaling(1./255, offset=-1)
+
+        train_ds= train_ds.map(lambda x, y: (normalization_layer(x), y), num_parallel_calls=tf.data.AUTOTUNE)
+        val_ds= val_ds.map(lambda x, y: (normalization_layer(x), y), num_parallel_calls=tf.data.AUTOTUNE)
+        test_ds= test_ds.map(lambda x, y: (normalization_layer(x), y)) #, num_parallel_calls=tf.data.AUTOTUNE)
+    else:
+        pass
+
+    print (f"Class names: {class_names}")
+    print(f"Train: {train_ds.element_spec}")
+    print(f"Normalize: {normalize}")
+    return (train_ds, val_ds, test_ds, class_names)
