@@ -45,7 +45,7 @@ def create_filepaths(model_name):
     models_image_path = models_dir.joinpath(model_name, f"{model_name}.png")
 
     global models_layer_df_path
-    models_layer_df_path = models_dir.joinpath(model_name, f"{model_name}_layers.pkl")
+    models_layer_df_path = models_dir.joinpath(model_name, f"{model_name}_layers.csv")
     
     global models_tf_path
     models_tf_path = models_dir.joinpath(model_name, f"{model_name}.h5")
@@ -70,6 +70,7 @@ def get_file_size(filepath):
     return file_size_kb
 
 def parse_model_name(model_name):
+    """"""
     """Split the encoded model name into the parameters
 
     Args:
@@ -85,7 +86,7 @@ def parse_model_name(model_name):
     global classes
     global variation
     base_model_name, alpha, resolution, channels, classes, variation = model_name.split("_")
-    return base_model_name
+    return base_model_name, alpha, resolution, channels, classes, variation
 
 
 def create_model_name(base_model_name, alpha, input_shape, classes, variation_code):
@@ -127,3 +128,33 @@ def append_dict_to_csv(csv_path, data_dict):
             writer.writerow(data_dict) 
 
     return
+
+
+def parse_mltk_model_summary(filepath): 
+    # Parse the MLTK model summary to grab important metrics   
+    with open(filepath, "r") as f:
+        lines = f.readlines() # list containing lines of file
+        #columns = [] # To store column names
+
+        i = 1
+        for line in lines:
+            line = line.strip() # remove leading/trailing white spaces
+            if line.startswith("Total params:"):
+                total_params = line.split()[-1]
+                total_params = int(total_params.replace(",", ""))
+            elif line.startswith("Trainable params:"):
+                trainable_params = line.split()[-1]
+                trainable_params =  int(trainable_params.replace(",", ""))
+            elif line.startswith("Non-trainable params:"):
+                non_trainable_params = line.split()[-1]
+                non_trainable_params = int(non_trainable_params.replace(",", ""))
+            elif line.startswith("Total MACs:"):
+                MACs = line.split()[-2] + " " + line.split()[-1]
+                #MACs = (float(MACs))
+            elif line.startswith("Total OPs:"):
+                FLOPs = line.split()[-2] + " " + line.split()[-1]
+                #FLOPs = (float(FLOPs))
+            else:
+                pass
+    
+    return (total_params, trainable_params, non_trainable_params, MACs, FLOPs)
