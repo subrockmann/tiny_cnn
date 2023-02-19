@@ -176,3 +176,140 @@ def get_lemon_quality_dataset(dataset_path, img_width, img_height, batch_size, c
     print(f"Train: {train_ds.element_spec}")
     print(f"Normalize: {normalize}")
     return (train_ds, val_ds, test_ds, class_names)
+
+
+def get_lemon_binary_datagen(dataset_path, img_width, img_height, batch_size, channels, normalize=True):
+    lemon_binary_dataset_path = Path.cwd().joinpath("datasets", "lemon_dataset_binary")
+    TRAIN_DIR = lemon_binary_dataset_path.joinpath("train")
+    VAL_DIR = lemon_binary_dataset_path.joinpath("val")
+    TEST_DIR = lemon_binary_dataset_path.joinpath("test")
+    #BASE_DIR_TEST = Path.cwd().parent.joinpath("tiny_mlperf", "vw_coco2014_96_test")
+    #Path.exists(BASE_DIR)
+    validation_split = 0
+    color_mode = "rgb"
+
+    datagen = tf.keras.preprocessing.image.ImageDataGenerator(
+        rotation_range=10,
+        width_shift_range=0.05,
+        height_shift_range=0.05,
+        zoom_range=.1,
+        horizontal_flip=True,
+        #validation_split=validation_split,
+        rescale=1. / 255)
+    
+    train_generator = datagen.flow_from_directory(
+        TRAIN_DIR,
+        target_size=(img_height, img_width),
+        batch_size=batch_size,
+        #subset='training',
+        color_mode=color_mode,
+        class_mode="sparse")
+    
+
+    valgen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1. / 255)
+
+    val_generator = valgen.flow_from_directory(
+        VAL_DIR,
+        target_size=(img_height, img_width),
+        batch_size=batch_size,
+        #subset='validation',
+        color_mode=color_mode,
+        class_mode="sparse")
+    
+    test_gen =  tf.keras.preprocessing.image.ImageDataGenerator(rescale=1. / 255)
+    
+    test_generator = test_gen.flow_from_directory(
+        TEST_DIR,
+        target_size=(img_height, img_width),
+        batch_size=batch_size, # was 1
+        #subset = "validation",
+        color_mode=color_mode,
+        class_mode="sparse")
+    
+    #print (f"Class names: {class_names}")
+    #print(f"Train: {train_generator.element_spec}")
+    #print(f"Normalize: {normalize}")
+
+    class_names  = ["bad_quality", "good_quality"]
+    return (train_generator, val_generator, test_generator, class_names)
+
+
+
+def get_vvw_minval_dataset(img_width, img_height, batch_size, channels, normalize=True):
+    
+    BASE_DIR = Path.cwd().parent.joinpath("tiny_mlperf", "vw_coco2014_96")
+    BASE_DIR_TEST = Path.cwd().parent.joinpath("tiny_mlperf", "vw_coco2014_96_test")
+    Path.exists(BASE_DIR)
+    validation_split = 0.1
+    color_mode = "rgb"
+    shuffle_seed = 1
+
+
+    print("Preparing vvw_minval_training dataset...")        
+    train_ds = tf.keras.utils.image_dataset_from_directory(
+        BASE_DIR,
+        validation_split=validation_split,
+        subset="training",
+        seed=shuffle_seed,
+        image_size=(img_height, img_width),
+        #labels=labels,
+        batch_size=batch_size,
+        color_mode=color_mode,
+        shuffle=True
+        )
+
+    class_names = train_ds.class_names
+
+    print("Preparing vvw_minval_validation dataset...")        
+    val_ds = tf.keras.utils.image_dataset_from_directory(
+        BASE_DIR,
+        validation_split=validation_split,
+        subset="validation",
+        seed=shuffle_seed,
+        image_size=(img_height, img_width),
+        #labels=labels,
+        batch_size=batch_size,
+        color_mode=color_mode,
+        shuffle=True
+        )
+
+    print("Preparing test dataset...")        
+    test_ds = tf.keras.utils.image_dataset_from_directory(
+        BASE_DIR_TEST,
+        validation_split=None,
+        #subset="validation",
+        seed=shuffle_seed,
+        image_size=(img_height, img_width),
+        #labels=labels,
+        batch_size=1,
+        color_mode=color_mode,
+        shuffle=False
+        )
+
+
+    # Create a data augmentation stage with horizontal flipping, rotations, zooms
+    data_augmentation = keras.Sequential([
+            tf.keras.layers.RandomRotation(10), #0.1
+            tf.keras.layers.RandomTranslation(
+                height_factor = 0.05,
+                width_factor = 0.05),
+            tf.keras.layers.RandomZoom(0.1),
+            tf.keras.layers.RandomFlip("horizontal")
+        ]
+        )
+
+    train_ds= train_ds.map(lambda x, y: (data_augmentation(x), y), num_parallel_calls=tf.data.AUTOTUNE )
+    val_ds= val_ds.map(lambda x, y: (data_augmentation(x), y), num_parallel_calls=tf.data.AUTOTUNE )
+
+    # Normalize the data to the range [0, 1]
+    normalization_layer = tf.keras.layers.Rescaling(1./255, offset=-1)
+
+    train_ds= train_ds.map(lambda x, y: (normalization_layer(x), y), num_parallel_calls=tf.data.AUTOTUNE)
+    val_ds= val_ds.map(lambda x, y: (normalization_layer(x), y), num_parallel_calls=tf.data.AUTOTUNE)
+    test_ds= test_ds.map(lambda x, y: (normalization_layer(x), y)) #, num_parallel_calls=tf.data.AUTOTUNE)
+    labels = class_names
+    
+    print (f"Class names: {class_names}")
+    print(f"Train: {train_ds.element_spec}")
+    print(f"Normalize: {normalize}")
+    return (train_ds, val_ds, test_ds, class_names)

@@ -1,5 +1,9 @@
 import pandas as pd 
+import json
 import wandb
+
+ENTITY = "susbrock"
+PROJECT = "model_DB"
 
 def wandb_model_DB():
     api = wandb.Api()
@@ -41,3 +45,33 @@ def wandb_model_DB():
 
 def make_clickable(val):
     return f'<a target="_blank" href="{val}">{val}</a>'
+
+def color_state(val):
+    color =''
+    if val == "finished":
+        color = 'green'
+    elif val == "crashed":
+        color = 'red'
+    return 'background-color: %s' % color
+
+def get_wandb_table_as_df(run_id, table_name, entity=ENTITY, project=PROJECT):
+    """Retrieve a logged table from wandb and return it as a pandas dataframe
+
+    Args:
+        run_id (str): wandb run id
+        table_name (str): name of the logged table
+        entity (str, optional): name of the wandb workspace. Defaults to ENTITY.
+        project (str, optional): name of the wandb project. Defaults to PROJECT.
+
+    Returns:
+        pd.DataFrame: pandas dataframe of the logged table
+    """
+    api = wandb.Api()
+    artifact = api.artifact(f'{entity}/{project}/run-{run_id}-{table_name}:latest')
+    artifact_dir = artifact.download()
+    table_path = f"{artifact_dir}/{table_name}.table.json"
+    with open(table_path) as file:
+        json_dict = json.load(file)
+    df = pd.DataFrame(json_dict["data"], columns=json_dict["columns"])
+
+    return df
