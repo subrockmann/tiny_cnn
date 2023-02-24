@@ -16,6 +16,7 @@ limitations under the License.
 ==============================================================================*/
 
 #include <TensorFlowLite.h>
+#include <Arduino.h>
 
 #include "main_functions.h"
 
@@ -47,8 +48,11 @@ tflite::MicroResourceVariables* resource_variables = nullptr;
 // constexpr tflite::MicroProfiler profiler;
 tflite::MicroProfiler profiler;
 
-constexpr int kTensorArenaSize = 2000;
+constexpr int kTensorArenaSize = (100 * 1024);
 uint8_t tensor_arena[kTensorArenaSize];
+
+unsigned long milli_delay = 5000;
+
 }  // namespace
 
 // The name of this function is important for Arduino compatibility.
@@ -126,8 +130,13 @@ void loop() {
                          static_cast<double>(x));
     return;
   }
-
+  
+  // printing the model name to serial out
+  // TF_LITE_REPORT_ERROR(error_reporter, "Running inference on: %c\n", model_name);
   profiler.Log();
+
+
+  delay(milli_delay);
 
   // Obtain the quantized output from model's output tensor
   int8_t y_quantized = output->data.int8[0];
