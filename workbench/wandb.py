@@ -17,6 +17,7 @@ def wandb_model_DB():
     created_at = []
     path = []
     notes = []
+    test_accuracies = []
 
     for run in runs:
         name.append(run.name)
@@ -26,11 +27,12 @@ def wandb_model_DB():
         created_at.append(run.created_at)
         path.append(run.path)
         notes.append(run.notes)
+        test_accuracies.append(run.summary.get("test_accuracy"))
 
         df = pd.DataFrame([run.config], columns=run.config.keys())
         config_df = pd.concat([config_df, df], axis=0, ignore_index=True)
-    col_names = ["run_name", "tags", "state", "url", "created_at", "path", "notes"]
-    attrs_df = pd.DataFrame(zip(name, tags, state, url,created_at, path, notes), columns=col_names)
+    col_names = ["run_name", "tags", "state", "url", "created_at", "path", "notes", "test_accuracy"]
+    attrs_df = pd.DataFrame(zip(name, tags, state, url,created_at, path, notes, test_accuracies), columns=col_names)
 
     combined_df =  pd.concat([config_df, attrs_df], axis=1)
 
@@ -40,6 +42,19 @@ def wandb_model_DB():
     combined_df.insert(4,"url" , combined_df.pop("url")) 
     
     return combined_df
+
+def get_model_DB_run_id_from_architecture(architecture):
+    df  = wandb_model_DB()
+
+    run_id = df.query(f"architecture=='{architecture}'")["id"].values[0]
+    return run_id
+
+def get_architecture_from_model_DB_run_id(run_id):
+    # get model name from run_id
+    df  = wandb_model_DB()
+    model_name = df.query(f"id=='{run_id}'")['architecture'].values[0]
+    return model_name
+
 
 
 
@@ -70,6 +85,7 @@ def get_wandb_table_as_df(run_id, table_name, entity=ENTITY, project=PROJECT):
     artifact = api.artifact(f'{entity}/{project}/run-{run_id}-{table_name}:latest')
     artifact_dir = artifact.download()
     table_path = f"{artifact_dir}/{table_name}.table.json"
+    print(f"filepath {table_path}")
     with open(table_path) as file:
         json_dict = json.load(file)
     df = pd.DataFrame(json_dict["data"], columns=json_dict["columns"])
