@@ -133,7 +133,7 @@ void loop() {
   
   // printing the model name to serial out
   // TF_LITE_REPORT_ERROR(error_reporter, "Running inference on: %c\n", model_name);
-  profiler.Log();
+  profiler.LogCsv();
 
 
   delay(milli_delay);
