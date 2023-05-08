@@ -119,7 +119,7 @@ def get_lemon_quality_dataset(dataset_path, img_width, img_height, batch_size, c
         image_size=((img_height, img_width)),
         #labels=labels,
         batch_size=batch_size,
-        #color_mode=color_mode,
+        color_mode=color_mode,
         shuffle=True
         )
     
@@ -134,7 +134,7 @@ def get_lemon_quality_dataset(dataset_path, img_width, img_height, batch_size, c
         seed=shuffle_seed,
         image_size=(img_height, img_width),
         batch_size=batch_size,
-        #color_mode=color_mode,
+        color_mode=color_mode,
         shuffle=True
         )
     
@@ -146,7 +146,7 @@ def get_lemon_quality_dataset(dataset_path, img_width, img_height, batch_size, c
         seed=shuffle_seed,
         image_size=(img_height, img_width),
         batch_size=1,
-        #color_mode=color_mode,
+        color_mode=color_mode,
         shuffle=False
         )
     
