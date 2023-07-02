@@ -117,7 +117,6 @@ venv.bak/
 # Rope project settings
 .ropeproject
 
-# mkdocs documentation
 /site
 
 # mypy
@@ -137,11 +136,16 @@ mlruns.db/
 # Datasets
 datasets/
 
+# Host configuration
+config.ini
+
 # Tensorboard
 logs/
 
 # Weights & Biases
 wandb/
+artifacts/
+best_model
 
 # Temporary paths
 artifact_notebooks/
