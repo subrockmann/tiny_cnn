@@ -158,3 +158,24 @@ def parse_mltk_model_summary(filepath):
                 pass
     
     return (total_params, trainable_params, non_trainable_params, MACs, FLOPs)
+
+
+def convert_to_kb(x):
+    input_value = x["input_value"]
+    unit = x["unit"]
+    if unit=="k":
+        kb_value = input_value
+    elif unit=="M":
+        kb_value = input_value * 1024
+    elif  unit=="G":
+        kb_value = input_value * 1024 * 1024
+    else:
+        kb_value ="NaN"
+    return kb_value
+
+def create_kb_column(df, column_name):
+    df_cols = df[column_name].str.split(" ", expand=True)
+    df_cols.columns =["input_value", "unit"]
+    df_cols["input_value"] = df_cols["input_value"].astype(float)
+    df_cols["kB"] = df_cols.apply(convert_to_kb, axis=1)
+    return df_cols["kB"]

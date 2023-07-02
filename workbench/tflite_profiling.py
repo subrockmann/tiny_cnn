@@ -52,13 +52,17 @@ def clean_peak_memory_df(df):
     df["Name"] = df["Name"].apply(get_middle_part)
     df["Working set"] = df["Working set"].apply(clean_working_set)
 
+    df['index'] = df.index
+
     # reorder columns
     df.insert(0, "Name", df.pop("Name"))
     df.insert(3, "Operator", df.pop("Operator"))
+    df.insert(0, "index", df.pop("index"))
 
     # rename columns
-    df.columns = ["name", "tensor_IDs", "RAM_b", "operator"]
-    df['index'] = df.index
+
+    df.columns = ["index", "layer_name", "tensor_IDs", "RAM_b", "operator", ]
+
 
     return df
 
@@ -66,7 +70,9 @@ def get_peak_memory_df(filepath):
     print(f"Reading in {filepath}")
     df = pd.read_csv(filepath)
     print("Cleaning up the dataframe.")
+
     df = clean_peak_memory_df(df)
+
     return df
 
 
@@ -111,7 +117,7 @@ def clean_tensor_memory_df(df):
     df.insert(4, "Name", df.pop("Name"))
 
     # rename columns
-    df.columns = ["id", "name", "shape", "size_b", "name_long"]
+    df.columns = ["id", "layer_name", "shape", "size_b", "name_long"]
 
     return df
 
@@ -120,4 +126,5 @@ def get_tensor_details_df(filepath):
     df = pd.read_csv(filepath)
     print("Cleaning up the dataframe.")
     df = clean_tensor_memory_df(df)
+    df = df.reset_index()
     return df
