@@ -18,38 +18,47 @@ This repository contains the notebooks for the CNN-Analyzer - a dashboard based 
 
 <br>  
 
-# Install the environment
+# Install the Conda Environment
 
 ```conda env create -f environment.yml
 conda env create -f conda-environment.yhttps://github.com/subrockmann/tiny_cnn/blob/master/08%20Update%20Model%20DB.ipynb
 ```
 
-# Activate the environmnet
+## Activate the Environmnet
 
-```conda activate tiny_cnn```
+```
+conda activate tiny_cnn
+```
 
-# Update the environment
+
+## Update the Environment
 ```
 conda activate tiny_cnn
 conda env update --file environment.yml # --prune
 ```
 
-# Uninstalling the environment  
+## Uninstalling the Environment  
 If there are too many error about inconsistencies, it might be easier to uninstall the environment and re-install it from scratch.  
 ```
 conda deactivate
 conda env remove --name tiny_cnn
 ```
 
-# If nothing else helps
-```conda clean --all```
+## If Nothing Else Helps
+```
+conda clean --all
+```
 
-# You might want to run:
-````conda update --all```
+## You Might Want to Run:
+```
+conda update --all
+```
 
-# Libcupti issue:
+## Libcupti Issue:
+```
 conda install -c nvidia cuda-cupti
-
+```
+<>
 # Setting up the Arduino IDE
 
 Unfortunately the Arduino_TensorFlowLite library is not include in the Arduino Library Manager. Instead the library has to be installed from a ZIP File 
