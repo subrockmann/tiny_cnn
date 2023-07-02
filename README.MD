@@ -58,7 +58,8 @@ conda update --all
 ```
 conda install -c nvidia cuda-cupti
 ```
-<>
+<br>
+
 # Setting up the Arduino IDE
 
 Unfortunately the Arduino_TensorFlowLite library is not include in the Arduino Library Manager. Instead the library has to be installed from a ZIP File 
